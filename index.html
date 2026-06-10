@@ -1,1 +1,935 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyWooden - Pengenalan Jenis-Jenis Kayu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Model Viewer (Menggunakan versi stabil v3.4.0 untuk mengelakkan ralat URL sandboxed) -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.4.0/dist/model-viewer.min.js"></script>
+    
+    <style>
+        /* Gaya Standard & Font Premium */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FAF9F6;
+            color: #2c3e2e;
+        }
+        
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
 
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animasi Kad Navigasi Bulat di Laman Utama */
+        .btn-card-nav {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-card-nav:hover {
+            transform: translateY(-8px);
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #8b5a2b;
+            box-shadow: 0 15px 30px rgba(139, 90, 43, 0.25);
+        }
+
+        /* Reka Bentuk Titik Hotspot Interaktif pada Model 3D */
+        .hotspot {
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            border: none;
+            background-color: #8b5a2b;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            pointer-events: auto;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .hotspot:active {
+            transform: scale(1.4);
+        }
+        .hotspot-annotation {
+            background-color: #FAF9F6;
+            color: #2c3e2e;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            padding: 8px 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            position: absolute;
+            bottom: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            border: 1px solid #8b5a2b;
+        }
+        .hotspot:hover .hotspot-annotation {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-2px);
+        }
+    </style>
+</head>
+<body class="selection:bg-[#4a6344] selection:text-white antialiased">
+
+    <!-- PANGKALAN DATA MODUL / CMS (BOLEH DIEDIT) -->
+    <script>
+        const CMS_DATA = {
+            appDetails: {
+                name: "EasyWooden",
+                institution: "UNIVERSITI PENDIDIKAN SULTAN IDRIS",
+                faculty: "FAKULTI TEKNIKAL DAN VOKASIONAL",
+                moduleTitle: "E-MODUL PEMBELAJARAN\nREKA BENTUK DAN PEMBUATAN PERABOT",
+                topic: "PENGECAMAN\nJENIS-JENIS KAYU"
+            },
+            introText: [
+                "Modul ini memberi pendedahan kepada pelajar dengan pengetahuan dan kemahiran dalam bidang perkayuan and perabot. Modul ini boleh digunakan dengan tujuan belajar di peringkat institusi serta pekerjaan yang melibatkan perkayuan.",
+                "Malaysia merupakan sebuah negara pengeksport kayu terkenal di dunia kerana mempunyai pelbagai kayu bermutu tinggi dan sesuai untuk membuat perabot dan lain-lain kegunaan."
+            ],
+            categories: [
+                { id: 'kkb', name: 'Kayu Keras dan Berat', desc: 'Mempunyai ketumpatan tinggi, sangat tahan lasak and sesuai untuk struktur berat.' },
+                { id: 'kksb', name: 'Kayu Keras dan Sederhana Berat', desc: 'Sederhana ketumpatannya, serbaguna untuk pelbagai jenis pembinaan dan perabot.' },
+                { id: 'kkr', name: 'Kayu Keras dan Ringan', desc: 'Mudah dikerjakan, popular untuk perabot dalaman dan kemasan.' },
+                { id: 'kl', name: 'Kayu Lembut', desc: 'Berasal daripada pokok konifer, ringan dan sesuai untuk panel atau venir.' }
+            ],
+            woods: [
+                // Menggunakan struktur folder 'images/' tempatan untuk memudahkan anda meletakkan gambar di GitHub
+                { id: 'cengal', name: 'Cengal', categoryId: 'kkb', img: 'images/cengal.jpg', color: 'Coklat Kekuningan', grain: 'Lurus terjalin', density: 'Tinggi (915-980 kg/m3)', weight: 'Sangat Berat', characteristics: 'Sangat tahan reput, tahan serangan anai-anai', uses: 'Pembuatan bot, jambatan, rangka bangunan' },
+                { id: 'balau', name: 'Balau', categoryId: 'kkb', img: 'images/balau.jpg' },
+                { id: 'kekatung', name: 'Kekatung', categoryId: 'kkb', img: 'images/kekatung.jpg' },
+                { id: 'merbau', name: 'Merbau', categoryId: 'kkb', img: 'images/merbau.jpg' },
+                { id: 'resak', name: 'Resak', categoryId: 'kkb', img: 'images/resak.jpg' },
+                { id: 'tembusu', name: 'Tembusu', categoryId: 'kkb', img: 'images/tembusu.jpg' },
+                { id: 'kempas', name: 'Kempas', categoryId: 'kksb', img: 'images/kempas.jpg' },
+                { id: 'keruing', name: 'Keruing', categoryId: 'kksb', img: 'images/keruing.jpg' },
+                { id: 'kapur', name: 'Kapur', categoryId: 'kksb', img: 'images/kapur.jpg' },
+                { id: 'tualang', name: 'Tualang', categoryId: 'kksb', img: 'images/tualang.jpg' },
+                { id: 'nyatuh', name: 'Nyatuh', categoryId: 'kkr', img: 'images/nyatuh.jpg' },
+                { id: 'jelutung', name: 'Jelutung', categoryId: 'kkr', img: 'images/jelutung.jpg' },
+                { id: 'meranti', name: 'Meranti', categoryId: 'kkr', img: 'images/meranti.jpg' },
+                { id: 'ramin', name: 'Ramin', categoryId: 'kkr', img: 'images/ramin.jpg' },
+                { id: 'sepetir', name: 'Sepetir', categoryId: 'kkr', img: 'images/sepetir.jpg' },
+                { id: 'getah', name: 'Kayu Getah', categoryId: 'kkr', img: 'images/getah.jpg' },
+                { id: 'damar_minyak', name: 'Damar Minyak', categoryId: 'kl', img: 'images/damar_minyak.jpg' },
+            ],
+            usesCategories: [
+                { id: 'binaan', title: 'Bahan Binaan', icon: 'home', desc: 'Penggunaan kayu dalam kerangka bumbung, dinding, dan lantai bangunan.' },
+                { id: 'perabot', title: 'Bahan Perabot', icon: 'layout-dashboard', desc: 'Pembuatan meja, kerusi, almari dari pelbagai tekstur kayu.' },
+                { id: 'pembungkusan', title: 'Pembungkusan', icon: 'package', desc: 'Peti kayu dan palet untuk industri logistik.' },
+                { id: 'alatan', title: 'Alatan & Pemegang', icon: 'wrench', desc: 'Pemegang alatan tangan, alat muzik dan peralatan sukan.' },
+                { id: 'larut', title: 'Bahan Larut', icon: 'droplets', desc: 'Diekstrak untuk menghasilkan resin dan minyak tertentu.' },
+                { id: 'kertas', title: 'Kertas', icon: 'file-text', desc: 'Pemprosesan pulpa kayu untuk industri kertas dunia.' },
+                { id: 'venir', title: 'Venir & Papan Lapis', icon: 'layers', desc: 'Kepingan nipis kayu untuk kemasan perabot.' }
+            ],
+            engineeringUses: [
+                { id: 'pembinaan', title: 'Industri Pembinaan', content: 'Maklumat dan gambar akan ditambah kelak berkenaan perincian penggunaan dalam struktur kejuruteraan awam.' },
+                { id: 'perkayuan', title: 'Industri Perkayuan', content: 'Maklumat dan gambar akan ditambah kelak berkenaan proses pemesinan dan pertukangan kilang.' },
+                { id: 'pengangkutan', title: 'Sistem Pengangkutan', content: 'Maklumat dan gambar akan ditambah kelak. (Contoh: Rangka gerabak kereta api lama, badan lori, atau bot)' }
+            ],
+            quiz: [
+                { question: "Apakah jenis kayu yang dikategorikan sebagai Kayu Keras dan Berat?", options: ["Jelutung", "Cengal", "Ramin", "Kayu Getah"], answer: 1 },
+                { question: "Pokok konifer kebiasaannya menghasilkan kategori kayu jenis apa?", options: ["Kayu Keras", "Kayu Sederhana Berat", "Kayu Lembut", "Kayu Getah"], answer: 2 },
+                { question: "Antara berikut, manakah negara yang terkenal dengan eksport kayu bermutu tinggi?", options: ["Malaysia", "Mesir", "Iceland", "Singapura"], answer: 0 }
+            ]
+        };
+
+        CMS_DATA.woods = CMS_DATA.woods.map(wood => ({
+            ...wood,
+            color: wood.color || 'Maklumat akan ditambah',
+            grain: wood.grain || 'Maklumat akan ditambah',
+            density: wood.density || 'Maklumat akan ditambah',
+            weight: wood.weight || 'Maklumat akan ditambah',
+            characteristics: wood.characteristics || 'Maklumat akan ditambah',
+            uses: wood.uses || 'Maklumat akan ditambah',
+        }));
+    </script>
+
+    <!-- HEADER / NAVIGATION BAR (Kekal Di Atas) -->
+    <header class="sticky top-0 z-50 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-[#e5e0d8] shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo Section -->
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="navigateTo('home')">
+                    <div class="flex flex-col items-start border-l-4 border-[#4a6344] pl-3">
+                        <span class="font-serif font-bold text-xl tracking-wider text-[#1a2f1b] group-hover:text-[#4a6344] transition-colors" id="nav-logo-name">
+                            EasyWooden
+                        </span>
+                        <span class="text-[0.65rem] font-bold tracking-widest text-[#7b6d58] uppercase">
+                            UPSI • FTV
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Carian, Wishlist, Menu Utama -->
+                <div class="flex items-center gap-2 md:gap-4">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 text-[#7b6d58] absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            placeholder="Cari Jenis Kayu.." 
+                            class="pl-9 pr-4 py-1.5 rounded-full bg-[#f0eee9] text-sm focus:outline-none focus:ring-1 focus:ring-[#4a6344] w-32 sm:w-56 transition-all focus:w-48 sm:focus:w-72"
+                            oninput="handleSearch(event)"
+                        >
+                        <div id="searchResults" class="hidden absolute top-full right-0 mt-2 w-48 sm:w-full bg-white shadow-lg rounded-md border border-[#e5e0d8] overflow-hidden z-50">
+                            <!-- Hasil Carian Dinamik -->
+                        </div>
+                    </div>
+                    <button class="relative p-2 text-[#7b6d58] hover:text-[#4a6344] transition-colors" onclick="alert('Fungsi Simpanan: Sila tekan ikon Hati (Heart) pada halaman perincian jenis kayu.')">
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                        <span id="wishlist-badge" class="hidden absolute top-0 right-0 w-4 h-4 bg-[#8b5a2b] text-white text-[10px] flex items-center justify-center rounded-full">0</span>
+                    </button>
+                    <!-- Butang Menu Menyatukan Semua Navigasi -->
+                    <button class="p-2 text-[#4a6344] focus:outline-none flex items-center gap-2 border-l border-[#e5e0d8] pl-2 md:pl-4 ml-1 md:ml-0" onclick="toggleMenu()">
+                        <div id="menu-icon-open"><i data-lucide="menu"></i></div>
+                        <div id="menu-icon-close" class="hidden"><i data-lucide="x"></i></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MENU NAVIGASI UTAMA (Overlay) -->
+    <div id="main-menu" class="hidden fixed inset-0 top-20 bg-[#FAF9F6]/95 backdrop-blur-md z-40 overflow-y-auto border-t border-[#e5e0d8]">
+        <div class="max-w-3xl mx-auto px-6 py-12 flex flex-col gap-4" id="unified-nav-links">
+            <!-- Pautan Dijana Melalui JS -->
+        </div>
+    </div>
+
+    <!-- KAWASAN KANDUNGAN UTAMA -->
+    <main id="main-content">
+        
+        <!-- PAGE 1: HOME -->
+        <div id="page-home">
+            <div class="relative min-h-[calc(100vh-5rem)] w-full overflow-hidden flex items-center justify-center py-12">
+                <div class="absolute inset-0 bg-cover bg-center z-0 scale-105 transform hover:scale-100 transition-transform duration-[10s]" style="background-image: url('https://images.unsplash.com/photo-1550684376-efcbd6e3f031?auto=format&fit=crop&w=1920&q=80')"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-[#1a2f1b]/90 via-[#1a2f1b]/70 to-[#1a2f1b]/95 z-10"></div>
+                
+                <div class="relative z-20 max-w-5xl mx-auto px-6 text-center text-[#f0eee9] flex flex-col items-center">
+                    
+                    <!-- Subtitle / Module context -->
+                    <h3 class="text-xs md:text-sm tracking-[0.25em] uppercase mb-4 text-[#c7b9a1] font-semibold whitespace-pre-line leading-relaxed" id="home-module-title"></h3>
+                    
+                    <!-- Main Topic Header (Ditambah whitespace-pre-line untuk menyokong format baris baru) -->
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-medium tracking-wide mb-12 leading-tight px-4 animate-fade-in whitespace-pre-line" id="home-topic"></h1>
+                    
+                    <!-- Balanced & Elegant Primary "Mula Belajar" Button -->
+                    <button onclick="navigateTo('intro')" class="group relative inline-flex items-center gap-3 px-8 py-3.5 sm:px-10 sm:py-4 bg-[#8b5a2b] hover:bg-[#a06b3a] text-white rounded-full font-bold uppercase tracking-[0.15em] text-xs sm:text-sm shadow-xl hover:shadow-[#8b5a2b]/30 border border-white/10 hover:border-[#c7b9a1]/30 transition-all duration-300 transform active:scale-95 mb-16">
+                        <span>Mula Belajar</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1.5 transition-transform duration-300"></i>
+                    </button>
+                    
+                    <!-- Navigasi Kad Bulat -->
+                    <div class="w-full max-w-4xl border-t border-white/10 pt-10">
+                        <p class="text-[10px] tracking-[0.3em] uppercase text-[#c7b9a1]/70 mb-8 font-semibold">Pilih Stesen Pembelajaran</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 lg:gap-8 justify-center" id="home-round-nav">
+                            <!-- Pilihan Navigasi Kad Bulat Dijana Dinamik Melalui JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: INTRO -->
+        <div id="page-intro" class="hidden">
+            <div class="max-w-4xl mx-auto px-6 py-24 fade-in">
+                <div id="intro-breadcrumbs" class="mb-12"></div>
+                <div class="grid md:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h2 class="text-4xl font-serif text-[#1a2f1b] mb-8 leading-tight">Mengenali Dunia <br/><span class="italic text-[#8b5a2b]">Perkayuan & Perabot</span></h2>
+                        <div id="intro-text-container" class="space-y-6 text-lg leading-relaxed text-[#4a544b]"></div>
+                        <button onclick="navigateTo('characteristics')" class="mt-12 flex items-center text-sm uppercase tracking-widest font-bold text-[#4a6344] hover:text-[#8b5a2b] transition-colors">
+                            Teroka Ciri-ciri Kayu <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-[#8b5a2b]/10 translate-x-4 translate-y-4 rounded-xl -z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1611078443553-6a9787ff9e42?auto=format&fit=crop&w=800&q=80" alt="Industri Kayu" class="rounded-xl shadow-2xl object-cover h-[500px] w-full">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: CHARACTERISTICS -->
+        <div id="page-characteristics" class="hidden">
+            <div class="max-w-6xl mx-auto px-6 py-24 fade-in">
+                <div id="char-breadcrumbs" class="mb-12"></div>
+                <div class="text-center mb-20">
+                    <h2 class="text-4xl md:text-5xl font-serif text-[#1a2f1b] mb-4">Ciri-ciri Fizikal Kayu</h2>
+                    <p class="text-[#7b6d58] max-w-2xl mx-auto text-lg">Pemilihan bahan bergantung kepada struktur and daya ketahanan sesuatu jenis kayu.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" id="char-grid">
+                    <!-- Dijana Melalui JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: CATEGORIES -->
+        <div id="page-categories" class="hidden">
+            <div class="max-w-6xl mx-auto px-6 py-24 fade-in">
+                <div id="cat-breadcrumbs" class="mb-12"></div>
+                <h2 class="text-4xl font-serif text-[#1a2f1b] mb-16 text-center">Senarai Jenis Kayu</h2>
+                <div class="space-y-16" id="cat-list">
+                    <!-- Dijana Melalui JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 5-22: WOOD DETAIL (DENGAN MULTIMEDIA 3D & HOTSPOT INTERAKTIF) -->
+        <div id="page-wood-detail" class="hidden">
+            <div class="max-w-6xl mx-auto px-6 py-16 fade-in">
+                <div id="detail-breadcrumbs" class="mb-12"></div>
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-[#e5e0d8]">
+                    <div class="grid lg:grid-cols-2">
+                        <!-- Left Panel: Media Viewport (Sokongan dwisistem: Gambar 2D / Model 3D) -->
+                        <div class="relative h-[450px] lg:h-auto min-h-[400px] bg-[#FAF9F6] border-r border-[#e5e0d8] overflow-hidden">
+                            <!-- 2D Image View -->
+                            <img id="detail-img" src="" alt="" class="absolute inset-0 w-full h-full object-cover transition-all duration-300" onerror="this.src='https://via.placeholder.com/800x800.png?text=Tiada+Gambar+Tekstur'">
+                            
+                            <!-- 3D Viewer Container (Tersembunyi secara lalai) -->
+                            <div id="detail-3d-container" class="absolute inset-0 hidden flex flex-col justify-between p-4 bg-gradient-to-b from-transparent to-[#FAF9F6]/90 z-20">
+                                <model-viewer
+                                    id="wood-model-viewer"
+                                    src=""
+                                    alt="Model 3D Kayu"
+                                    auto-rotate
+                                    camera-controls
+                                    shadow-intensity="1"
+                                    exposure="1"
+                                    loading="eager"
+                                    class="w-full h-full"
+                                    style="background-color: transparent;"
+                                    camera-orbit="0deg 75deg 105%"
+                                    field-of-view="30deg">
+                                    
+                                    <!-- Hotspot 1: Maklumat Ira Kayu -->
+                                    <button class="hotspot absolute" slot="hotspot-1" data-position="0m 0.08m 0.04m" data-normal="0m 1m 0m" data-visibility-attribute="visible">
+                                        <div class="hotspot-annotation" id="hotspot-ira-text">Ira: Membaca rona serat</div>
+                                    </button>
+                                    
+                                    <!-- Hotspot 2: Maklumat Ciri Fizikal -->
+                                    <button class="hotspot absolute" slot="hotspot-2" data-position="-0.04m -0.05m 0.06m" data-normal="1m 0m 0m" data-visibility-attribute="visible">
+                                        <div class="hotspot-annotation" id="hotspot-ciri-text">Ciri: Kualiti & Daya Tahan</div>
+                                    </button>
+
+                                    <!-- Paparan Amaran Ralat (Ganti Sekiranya Fail GLB Tiada) -->
+                                    <div slot="error" class="absolute inset-0 flex flex-col items-center justify-center bg-[#FAF9F6] text-red-600 text-sm font-semibold p-4 text-center z-50">
+                                       <i data-lucide="alert-triangle" class="w-10 h-10 mb-2 text-red-500"></i>
+                                       <span class="block">Model 3D tidak dapat dipaparkan.</span>
+                                       <span class="text-xs text-gray-500 font-normal mt-1">(Sila pastikan folder 'Model3D' mengandungi fail GLB yang sah)</span>
+                                    </div>
+                                </model-viewer>
+                            </div>
+
+                            <!-- Kategori Lencana Terapung -->
+                            <div class="absolute top-6 left-6 z-30 flex flex-col gap-2">
+                                <span id="detail-category-badge" class="bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold tracking-widest text-[#4a6344] uppercase shadow-sm"></span>
+                            </div>
+
+                            <!-- Sistem Penukar Media (2D / 360°) -->
+                            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex bg-white/95 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-[#e5e0d8] gap-1">
+                                <button id="btn-view-2d" onclick="toggleMediaView('2d')" class="px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 bg-[#8b5a2b] text-white">
+                                    Tekstur 2D
+                                </button>
+                                <button id="btn-view-3d" onclick="toggleMediaView('3d')" class="px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 text-[#7b6d58] hover:text-[#8b5a2b] flex items-center gap-1.5">
+                                    <i data-lucide="rotate-3d" class="w-3.5 h-3.5"></i> Lihat 360°
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Data Spesifikasi Kayu -->
+                        <div class="p-10 lg:p-16">
+                            <div class="flex justify-between items-start mb-10">
+                                <h1 id="detail-name" class="text-5xl font-serif text-[#1a2f1b]"></h1>
+                                <button id="btn-wishlist" class="p-3 rounded-full border transition-all bg-white border-[#e5e0d8] text-[#7b6d58] hover:border-[#8b5a2b] hover:text-[#8b5a2b]" onclick="toggleWishlist()">
+                                    <i data-lucide="heart" id="icon-wishlist" class="w-6 h-6"></i>
+                                </button>
+                            </div>
+                            <div class="space-y-6" id="detail-specs">
+                                <!-- Dijana Melalui JS -->
+                            </div>
+                            <div class="mt-12 bg-[#f9f8f6] p-6 rounded-xl border border-[#e5e0d8]">
+                                <div class="flex items-center text-[#8b5a2b] mb-2 font-bold text-sm tracking-widest uppercase">
+                                    <i data-lucide="info" class="w-4 h-4 mr-2"></i> Nota Modul
+                                </div>
+                                <p class="text-sm text-[#7b6d58] italic">Maklumat di atas merupakan sebahagian daripada e-modul Pengenalan Jenis-Jenis Kayu (Boleh dikemas kini menerusi CMS).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 23-28: USES -->
+        <div id="page-uses" class="hidden">
+            <div class="max-w-6xl mx-auto px-6 py-24 fade-in">
+                <div id="uses-breadcrumbs" class="mb-12"></div>
+                <h2 class="text-4xl font-serif text-[#1a2f1b] mb-6 text-center">Aplikasi & Kegunaan</h2>
+                <p class="text-center text-[#7b6d58] max-w-2xl mx-auto mb-16">Kayu mempunyai potensi yang sangat luas bermula dari struktur kejuruteraan sehinggalah produk harian.</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24" id="uses-grid">
+                    <!-- Dijana Melalui JS -->
+                </div>
+
+                <div class="bg-[#1a2f1b] rounded-3xl p-10 md:p-16 text-[#f0eee9]">
+                    <h3 class="text-3xl font-serif mb-12 text-center text-[#c7b9a1]">Penggunaan Kejuruteraan & Industri</h3>
+                    <div class="space-y-12" id="eng-uses-list">
+                        <!-- Dijana Melalui JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 29: QUIZ -->
+        <div id="page-quiz" class="hidden">
+            <div class="max-w-3xl mx-auto px-6 py-24 fade-in min-h-[70vh] flex flex-col justify-center">
+                <!-- Quiz Start Screen -->
+                <div id="quiz-start" class="text-center bg-white p-16 rounded-3xl shadow-lg border border-[#e5e0d8]">
+                    <i data-lucide="help-circle" class="w-20 h-20 mx-auto text-[#8b5a2b] mb-6"></i>
+                    <h2 class="text-4xl font-serif text-[#1a2f1b] mb-4">Uji Minda Anda</h2>
+                    <p class="text-[#7b6d58] mb-12">Jawab soalan-soalan berikut berdasarkan pemahaman anda dalam modul Pengenalan Jenis-Jenis Kayu.</p>
+                    <button onclick="startQuiz()" class="bg-[#4a6344] text-white px-10 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-[#2d3b2a] transition-colors shadow-md">
+                        Mula Latihan
+                    </button>
+                </div>
+
+                <!-- Quiz Questions Screen -->
+                <div id="quiz-questions" class="hidden bg-white p-10 md:p-16 rounded-3xl shadow-lg border border-[#e5e0d8]">
+                    <div class="flex justify-between items-center mb-8 text-sm font-bold tracking-widest uppercase text-[#7b6d58]">
+                        <span id="quiz-progress"></span>
+                        <span id="quiz-score-display"></span>
+                    </div>
+                    <h3 id="quiz-question-text" class="text-2xl md:text-3xl font-serif text-[#1a2f1b] mb-10 leading-relaxed"></h3>
+                    <div id="quiz-options" class="space-y-4">
+                        <!-- Dijana Melalui JS -->
+                    </div>
+                </div>
+
+                <!-- Quiz Results Screen -->
+                <div id="quiz-results" class="hidden text-center bg-white p-16 rounded-3xl shadow-lg border border-[#e5e0d8]">
+                    <div id="quiz-emoji" class="text-8xl mb-6"></div>
+                    <h2 class="text-3xl font-serif text-[#1a2f1b] mb-2">Keputusan Kuiz</h2>
+                    <p class="text-xl text-[#7b6d58] mb-8">
+                        Anda mendapat <span id="quiz-final-score" class="font-bold text-[#8b5a2b] text-2xl"></span> daripada <span id="quiz-total-q"></span> markah.
+                    </p>
+                    <div class="flex justify-center gap-4">
+                        <button onclick="resetQuiz()" class="bg-[#e5e0d8] text-[#4a544b] px-8 py-3 rounded-full font-bold uppercase tracking-widest hover:bg-[#d5cfc5] transition-colors">Cuba Lagi</button>
+                        <button onclick="navigateTo('home')" class="bg-[#1a2f1b] text-white px-8 py-3 rounded-full font-bold uppercase tracking-widest hover:bg-[#2d3b2a] transition-colors">Kembali ke Utama</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER (Pembangun & Hak Cipta) -->
+    <footer id="footer" class="hidden bg-[#1a2f1b] text-[#e5e0d8] py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h3 class="font-serif text-2xl mb-4 text-[#f0eee9]" id="footer-name"></h3>
+            <p class="text-sm opacity-70 mb-8" id="footer-module"></p>
+            
+            <div class="h-px w-24 bg-[#4a6344] mx-auto mb-8 opacity-50"></div>
+            
+            <p class="text-xs opacity-70 mb-2">Disediakan oleh Nur Syafiqah</p>
+            <p class="text-sm opacity-70 tracking-wider uppercase mb-8 leading-relaxed" id="footer-fac-inst"></p>
+            
+            <p class="text-xs opacity-50">© <span id="current-year"></span> Hak Cipta Terpelihara.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIK JAVASCRIPT UTAMA -->
+    <script>
+        // Pembolehubah Keadaan (State)
+        let currentPage = 'home';
+        let isMenuOpen = false;
+        let wishlist = [];
+        let currentWoodId = null;
+
+        // Pembolehubah Kuiz
+        let quizIndex = 0;
+        let quizScore = 0;
+        let quizHasStarted = false;
+        let selectedOption = null;
+
+        // Senarai Navigasi Utama
+        const NAV_LINKS = [
+            { id: 'home', label: 'Utama', icon: 'home' },
+            { id: 'intro', label: 'Pengenalan', icon: 'info' },
+            { id: 'characteristics', label: 'Ciri-ciri Kayu', icon: 'check-circle-2' },
+            { id: 'categories', label: 'Kategori Kayu', icon: 'layers' },
+            { id: 'uses', label: 'Kegunaan', icon: 'hammer' },
+            { id: 'quiz', label: 'Latih Tubi', icon: 'help-circle' }
+        ];
+
+        // Fungsi Penyelesaian URL Selamat (Safe URL Resolver)
+        // Menyelesaikan pepijat "TypeError: URL is not valid" dalam sandboxed iframe atau peranti tempatan
+        function getSafeModelURL(woodId) {
+            try {
+                // Jika sedang berjalan di preview Canvas atau localhost tanpa aset fizikal, gunakan model demo awam yang dijamin berfungsi
+                if (window.location.hostname.includes('usercontent.goog') || 
+                    window.location.hostname.includes('localhost') || 
+                    window.location.hostname === "" || 
+                    window.location.protocol === 'file:') {
+                    
+                    // Menggunakan model demonstrasi Astronaut yang sah dari CDN Google Model-Viewer untuk mengelakkan ralat 404
+                    return 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+                }
+                
+                // Bila diterbitkan di GitHub Pages anda, ia akan memuat fail dari folder tempatan secara automatik
+                const base = window.location.href.startsWith('http') ? window.location.href : window.location.origin;
+                return new URL(`Model3D/${woodId}.glb`, base).toString();
+            } catch (e) {
+                // Sebagai ganti kecemasan jika binaan ralat URL berlaku
+                return `Model3D/${woodId}.glb`; 
+            }
+        }
+
+        // PERMULAAN SISTEM (INITIALIZATION)
+        function initApp() {
+            document.getElementById('nav-logo-name').innerText = CMS_DATA.appDetails.name;
+            document.getElementById('home-module-title').innerText = CMS_DATA.appDetails.moduleTitle;
+            document.getElementById('home-topic').innerText = CMS_DATA.appDetails.topic;
+            
+            document.getElementById('footer-name').innerText = CMS_DATA.appDetails.name;
+            document.getElementById('footer-module').innerText = CMS_DATA.appDetails.moduleTitle.replace('\n', ' ');
+            document.getElementById('footer-fac-inst').innerHTML = `${CMS_DATA.appDetails.faculty} <br/> ${CMS_DATA.appDetails.institution}`;
+            document.getElementById('current-year').innerText = new Date().getFullYear();
+
+            renderNavLinks();
+            renderHomeRoundNav();
+            renderIntro();
+            renderCharacteristics();
+            renderCategories();
+            renderUses();
+            
+            lucide.createIcons();
+            
+            navigateTo('home');
+        }
+
+        // PENGENDALIAN NAVIGATION (ROUTING)
+        function navigateTo(pageId, woodId = null) {
+            const pages = ['home', 'intro', 'characteristics', 'categories', 'wood-detail', 'uses', 'quiz'];
+            pages.forEach(id => {
+                const el = document.getElementById(`page-${id}`);
+                if(el) el.classList.add('hidden');
+            });
+            
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if(targetPage) targetPage.classList.remove('hidden');
+            
+            currentPage = pageId;
+            currentWoodId = woodId;
+
+            const footer = document.getElementById('footer');
+            if(pageId === 'home') {
+                footer.classList.add('hidden');
+            } else {
+                footer.classList.remove('hidden');
+            }
+
+            if(isMenuOpen) toggleMenu();
+
+            renderNavLinks();
+
+            if (pageId === 'wood-detail' && woodId) {
+                renderWoodDetail(woodId);
+            }
+            if (pageId === 'quiz') {
+                resetQuiz();
+            }
+
+            generateBreadcrumbs(pageId, woodId);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        // JANAKAN BREADCRUMBS
+        function generateBreadcrumbs(pageId, woodId) {
+            const createCrumbHTML = (pathArr) => {
+                let html = '<div class="flex items-center text-xs font-semibold tracking-widest uppercase text-[#7b6d58] opacity-80">';
+                pathArr.forEach((item, idx) => {
+                    html += `<span class="cursor-pointer hover:text-[#8b5a2b] transition-colors" onclick="navigateTo('${item.page}', '${item.arg || ''}')">${item.label}</span>`;
+                    if (idx < pathArr.length - 1) {
+                        html += `<i data-lucide="chevron-right" class="w-3 h-3 mx-2"></i>`;
+                    }
+                });
+                html += '</div>';
+                return html;
+            }
+
+            if(pageId === 'intro') document.getElementById('intro-breadcrumbs').innerHTML = createCrumbHTML([{label: 'Utama', page: 'home'}, {label: 'Pengenalan', page: 'intro'}]);
+            if(pageId === 'characteristics') document.getElementById('char-breadcrumbs').innerHTML = createCrumbHTML([{label: 'Utama', page: 'home'}, {label: 'Ciri-ciri Kayu', page: 'characteristics'}]);
+            if(pageId === 'categories') document.getElementById('cat-breadcrumbs').innerHTML = createCrumbHTML([{label: 'Utama', page: 'home'}, {label: 'Kategori Jenis Kayu', page: 'categories'}]);
+            if(pageId === 'uses') document.getElementById('uses-breadcrumbs').innerHTML = createCrumbHTML([{label: 'Utama', page: 'home'}, {label: 'Kegunaan Kayu', page: 'uses'}]);
+            
+            if(pageId === 'wood-detail' && woodId) {
+                const wood = CMS_DATA.woods.find(w => w.id === woodId);
+                const category = CMS_DATA.categories.find(c => c.id === wood.categoryId).name;
+                document.getElementById('detail-breadcrumbs').innerHTML = createCrumbHTML([
+                    {label: 'Kategori', page: 'categories'}, 
+                    {label: category, page: 'categories'}, 
+                    {label: wood.name, page: 'wood-detail', arg: wood.id}
+                ]);
+            }
+        }
+
+        // ANTARAMUKA MENU TOGGLE
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            const menu = document.getElementById('main-menu');
+            const iconOpen = document.getElementById('menu-icon-open');
+            const iconClose = document.getElementById('menu-icon-close');
+            
+            if (isMenuOpen) {
+                menu.classList.remove('hidden');
+                iconOpen.classList.add('hidden');
+                iconClose.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+                iconOpen.classList.remove('hidden');
+                iconClose.classList.add('hidden');
+            }
+        }
+
+        function renderNavLinks() {
+            const getLinkClass = (id) => {
+                let base = 'flex items-center text-xl sm:text-2xl font-serif py-4 border-b border-[#e5e0d8]/50 transition-all hover:text-[#8b5a2b] hover:pl-2';
+                let active = currentPage === id ? 'text-[#8b5a2b] font-bold pl-2' : 'text-[#4a6344]';
+                return `${base} ${active}`;
+            };
+
+            document.getElementById('unified-nav-links').innerHTML = NAV_LINKS.map(link => 
+                `<button onclick="navigateTo('${link.id}')" class="${getLinkClass(link.id)}">
+                    <i data-lucide="${link.icon}" class="w-6 h-6 sm:w-8 sm:h-8 mr-6 opacity-60"></i> ${link.label}
+                </button>`
+            ).join('');
+        }
+
+        function renderHomeRoundNav() {
+            const btns = [
+                { id: 'intro', label: 'Pengenalan', icon: 'info', desc: 'Silibus Asas' },
+                { id: 'characteristics', label: 'Ciri Kayu', icon: 'tree-pine', desc: 'Sifat Fizikal' },
+                { id: 'categories', label: 'Jenis Kayu', icon: 'layers', desc: 'Spesies Pokok' },
+                { id: 'uses', label: 'Kegunaan', icon: 'hammer', desc: 'Aplikasi Perabot' },
+                { id: 'quiz', label: 'Latih Tubi', icon: 'help-circle', desc: 'Penilaian Minda' },
+            ];
+
+            document.getElementById('home-round-nav').innerHTML = btns.map(btn => `
+                <button onclick="navigateTo('${btn.id}')" class="btn-card-nav group flex flex-col items-center justify-center p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md w-28 h-28 sm:w-36 sm:h-36 mx-auto">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 flex items-center justify-center mb-1.5 sm:mb-2 text-[#c7b9a1] group-hover:bg-[#8b5a2b] group-hover:text-white transition-all duration-300 transform group-hover:rotate-12 shadow-inner">
+                        <i data-lucide="${btn.icon}" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    </div>
+                    <span class="text-[10px] sm:text-xs font-bold tracking-wider uppercase text-[#f0eee9] group-hover:text-[#c7b9a1] transition-colors mb-0.5 text-center w-full truncate px-1">${btn.label}</span>
+                    <span class="text-[8px] sm:text-[10px] tracking-wide text-[#c7b9a1]/60 group-hover:text-white/80 transition-colors text-center w-full hidden sm:block">${btn.desc}</span>
+                </button>
+            `).join('');
+        }
+
+        // TAMPILKAN PANEL MEDIA 2D / 360 MODEL 3D
+        function toggleMediaView(type) {
+            const img = document.getElementById('detail-img');
+            const container3d = document.getElementById('detail-3d-container');
+            const btn2d = document.getElementById('btn-view-2d');
+            const btn3d = document.getElementById('btn-view-3d');
+            const viewer = document.getElementById('wood-model-viewer');
+
+            if (type === '3d') {
+                img.classList.add('opacity-0');
+                setTimeout(() => img.classList.add('hidden'), 150);
+                container3d.classList.remove('hidden');
+                
+                btn2d.className = "px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 text-[#7b6d58] hover:text-[#8b5a2b]";
+                btn3d.className = "px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 bg-[#8b5a2b] text-white flex items-center gap-1.5";
+                
+                if (viewer) {
+                    viewer.cameraOrbit = "45deg 75deg 100%";
+                    viewer.fieldOfView = "28deg";
+                }
+            } else {
+                img.classList.remove('hidden');
+                setTimeout(() => img.classList.remove('opacity-0'), 50);
+                container3d.classList.add('hidden');
+
+                btn2d.className = "px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 bg-[#8b5a2b] text-white";
+                btn3d.className = "px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 text-[#7b6d58] hover:text-[#8b5a2b] flex items-center gap-1.5";
+            }
+        }
+
+        // PEMAPARAN KANDUNGAN HALAMAN
+        function renderIntro() {
+            document.getElementById('intro-text-container').innerHTML = CMS_DATA.introText.map(para => 
+                `<p class="first-letter:text-5xl first-letter:font-serif first-letter:float-left first-letter:mr-3 first-letter:text-[#8b5a2b]">${para}</p>`
+            ).join('');
+        }
+
+        function renderCharacteristics() {
+            document.getElementById('char-grid').innerHTML = CMS_DATA.categories.map((cat, idx) => `
+                <div onclick="navigateTo('categories')" class="group bg-white p-8 rounded-2xl shadow-sm border border-[#e5e0d8] hover:shadow-xl hover:border-[#8b5a2b]/30 transition-all duration-300 cursor-pointer flex flex-col h-full">
+                    <div class="text-5xl font-serif text-[#f0eee9] mb-4 group-hover:text-[#4a6344]/10 transition-colors">0${idx + 1}</div>
+                    <h3 class="text-xl font-bold text-[#1a2f1b] mb-4 group-hover:text-[#8b5a2b] transition-colors">${cat.name}</h3>
+                    <p class="text-[#5c685c] leading-relaxed text-sm flex-grow">${cat.desc}</p>
+                    <div class="mt-8 flex justify-end">
+                        <div class="w-8 h-8 rounded-full bg-[#f5f3ef] flex items-center justify-center group-hover:bg-[#8b5a2b] group-hover:text-white text-[#7b6d58] transition-colors">
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCategories() {
+            let html = '';
+            CMS_DATA.categories.forEach(cat => {
+                const woodsInCat = CMS_DATA.woods.filter(w => w.categoryId === cat.id);
+                html += `
+                    <div class="border-t border-[#e5e0d8] pt-12">
+                        <h3 class="text-2xl font-serif text-[#8b5a2b] mb-8 flex items-center">
+                            <div class="w-2 h-2 bg-[#4a6344] rounded-full mr-4"></div>${cat.name}
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            ${woodsInCat.map(wood => `
+                                <div onclick="navigateTo('wood-detail', '${wood.id}')" class="group cursor-pointer">
+                                    <div class="aspect-square bg-gray-200 mb-3 rounded-lg overflow-hidden relative shadow-sm">
+                                        <div class="absolute inset-0 bg-[#1a2f1b]/0 group-hover:bg-[#1a2f1b]/20 transition-colors z-10"></div>
+                                        <img src="${wood.img}" alt="${wood.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/400x400.png?text=${wood.name}'">
+                                    </div>
+                                    <p class="text-center font-semibold text-[#4a544b] group-hover:text-[#8b5a2b] transition-colors">${wood.name}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('cat-list').innerHTML = html;
+        }
+
+        function renderWoodDetail(woodId) {
+            const wood = CMS_DATA.woods.find(w => w.id === woodId);
+            const categoryName = CMS_DATA.categories.find(c => c.id === wood.categoryId).name;
+
+            document.getElementById('detail-img').src = wood.img;
+            document.getElementById('detail-category-badge').innerText = categoryName;
+            document.getElementById('detail-name').innerText = wood.name;
+
+            // Integrasi Fail Model 3D GLB Dinamik (Laluan terselamat menggunakan resolver)
+            const viewer = document.getElementById('wood-model-viewer');
+            if (viewer) {
+                if (wood && wood.id) {
+                    // Semak ralat dengan menetapkan absolute path yang selamat melalui penyelesai URL kami
+                    const modelPath = getSafeModelURL(wood.id);
+                    viewer.setAttribute('src', modelPath);
+                    viewer.setAttribute('alt', `Model 3D Kayu ${wood.name}`);
+                } else {
+                    viewer.removeAttribute('src');
+                }
+                
+                // Kemas kini teks anotasi hotspot secara dinamik
+                const hotspotIra = document.getElementById('hotspot-ira-text');
+                const hotspotCiri = document.getElementById('hotspot-ciri-text');
+                
+                if (hotspotIra) hotspotIra.innerText = `Ira Kayu: ${wood.grain}`;
+                if (hotspotCiri) hotspotCiri.innerText = `Fizikal: ${wood.characteristics}`;
+            }
+
+            // Kembalikan ke paparan 2D terlebih dahulu apabila butiran kayu bertukar
+            toggleMediaView('2d');
+
+            updateWishlistUI();
+
+            const details = [
+                { label: 'Warna', value: wood.color },
+                { label: 'Ira', value: wood.grain },
+                { label: 'Ketumpatan', value: wood.density },
+                { label: 'Berat', value: wood.weight },
+                { label: 'Ciri Fizikal', value: wood.characteristics },
+                { label: 'Kegunaan', value: wood.uses },
+            ];
+
+            document.getElementById('detail-specs').innerHTML = details.map(item => `
+                <div class="flex flex-col sm:flex-row border-b border-[#f0eee9] pb-4">
+                    <span class="w-40 text-sm font-bold tracking-widest uppercase text-[#7b6d58] mb-1 sm:mb-0">${item.label}</span>
+                    <span class="flex-1 text-[#4a544b] ${item.value === 'Maklumat akan ditambah' ? 'italic opacity-60' : ''}">${item.value}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderUses() {
+            document.getElementById('uses-grid').innerHTML = CMS_DATA.usesCategories.map(use => `
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-[#e5e0d8] text-center hover:-translate-y-1 transition-transform">
+                    <div class="w-16 h-16 mx-auto bg-[#f5f3ef] text-[#4a6344] rounded-full flex items-center justify-center mb-4">
+                        <i data-lucide="${use.icon}" class="w-8 h-8"></i>
+                    </div>
+                    <h4 class="font-bold text-[#1a2f1b] mb-2">${use.title}</h4>
+                    <p class="text-xs text-[#7b6d58]">${use.desc}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('eng-uses-list').innerHTML = CMS_DATA.engineeringUses.map((eng, idx) => `
+                <div class="border-b border-[#4a6344]/50 pb-8 last:border-0">
+                    <div class="flex items-center mb-4">
+                        <span class="text-[#8b5a2b] font-serif text-3xl mr-6">0${idx + 1}</span>
+                        <h4 class="text-xl font-bold tracking-wide uppercase">${eng.title}</h4>
+                    </div>
+                    <p class="ml-14 text-[#c7b9a1] bg-white/5 p-4 rounded-lg italic">${eng.content}</p>
+                </div>
+            `).join('');
+        }
+
+        // PENGENDALIAN KOTAK CARIAN
+        function handleSearch(e) {
+            const query = e.target.value.toLowerCase();
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if(!query) {
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+
+            const matches = CMS_DATA.woods.filter(w => w.name.toLowerCase().includes(query));
+            
+            if(matches.length > 0) {
+                resultsDiv.innerHTML = matches.map(wood => `
+                    <div onclick="document.getElementById('searchInput').value=''; document.getElementById('searchResults').classList.add('hidden'); navigateTo('wood-detail', '${wood.id}');" class="px-4 py-2 hover:bg-[#f0eee9] cursor-pointer text-sm">
+                        ${wood.name}
+                    </div>
+                `).join('');
+                resultsDiv.classList.remove('hidden');
+            } else {
+                resultsDiv.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">Tiada hasil dijumpai</div>';
+                resultsDiv.classList.remove('hidden');
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('.relative')) {
+                document.getElementById('searchResults').classList.add('hidden');
+            }
+        });
+
+        // SIMPANAN WISHLIST
+        function toggleWishlist() {
+            if(!currentWoodId) return;
+            
+            if (wishlist.includes(currentWoodId)) {
+                wishlist = wishlist.filter(id => id !== currentWoodId);
+            } else {
+                wishlist.push(currentWoodId);
+            }
+            updateWishlistUI();
+        }
+
+        function updateWishlistUI() {
+            const badge = document.getElementById('wishlist-badge');
+            if(wishlist.length > 0) {
+                badge.innerText = wishlist.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            if (currentPage === 'wood-detail' && currentWoodId) {
+                const btn = document.getElementById('btn-wishlist');
+                const icon = document.getElementById('icon-wishlist');
+                if (wishlist.includes(currentWoodId)) {
+                    btn.className = "p-3 rounded-full border transition-all bg-[#8b5a2b] border-[#8b5a2b] text-white";
+                    icon.classList.add('fill-current');
+                } else {
+                    btn.className = "p-3 rounded-full border transition-all bg-white border-[#e5e0d8] text-[#7b6d58] hover:border-[#8b5a2b] hover:text-[#8b5a2b]";
+                    icon.classList.remove('fill-current');
+                }
+            }
+        }
+
+        // KAWALAN LATIH TUBI (KUIZ)
+        function startQuiz() {
+            document.getElementById('quiz-start').classList.add('hidden');
+            document.getElementById('quiz-questions').classList.remove('hidden');
+            renderQuizQuestion();
+        }
+
+        function resetQuiz() {
+            quizIndex = 0;
+            quizScore = 0;
+            selectedOption = null;
+            document.getElementById('quiz-start').classList.remove('hidden');
+            document.getElementById('quiz-questions').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+        }
+
+        function renderQuizQuestion() {
+            const currentQ = CMS_DATA.quiz[quizIndex];
+            
+            document.getElementById('quiz-progress').innerText = `Soalan ${quizIndex + 1} / ${CMS_DATA.quiz.length}`;
+            document.getElementById('quiz-score-display').innerText = `Skor: ${quizScore}`;
+            document.getElementById('quiz-question-text').innerText = currentQ.question;
+
+            let html = '';
+            currentQ.options.forEach((opt, idx) => {
+                let btnClass = "w-full text-left p-6 rounded-xl border-2 transition-all font-medium text-lg ";
+                
+                if (selectedOption === null) {
+                    btnClass += "border-[#e5e0d8] hover:border-[#8b5a2b] hover:bg-[#fcfbf9] text-[#4a544b]";
+                } else if (idx === currentQ.answer) {
+                    btnClass += "border-green-500 bg-green-50 text-green-800";
+                } else if (idx === selectedOption) {
+                    btnClass += "border-red-500 bg-red-50 text-red-800";
+                } else {
+                    btnClass += "border-[#e5e0d8] opacity-50";
+                }
+
+                html += `
+                    <button ${selectedOption !== null ? 'disabled' : ''} onclick="handleAnswer(${idx})" class="${btnClass}">
+                        <span class="inline-block w-8 font-serif text-[#8b5a2b]">${String.fromCharCode(65 + idx)}.</span>
+                        ${opt}
+                    </button>
+                `;
+            });
+
+            document.getElementById('quiz-options').innerHTML = html;
+        }
+
+        function handleAnswer(idx) {
+            if (selectedOption !== null) return;
+            
+            selectedOption = idx;
+            const currentQ = CMS_DATA.quiz[quizIndex];
+            
+            if (idx === currentQ.answer) {
+                quizScore++;
+            }
+            
+            renderQuizQuestion();
+
+            setTimeout(() => {
+                selectedOption = null;
+                if (quizIndex < CMS_DATA.quiz.length - 1) {
+                    quizIndex++;
+                    renderQuizQuestion();
+                } else {
+                    showQuizResults();
+                }
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
